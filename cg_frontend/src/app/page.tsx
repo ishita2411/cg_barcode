@@ -23,6 +23,11 @@ const firebaseConfig = {
 export const firebaseApp = initializeApp(firebaseConfig);
 export const db = getFirestore(firebaseApp);
 export const auth = getAuth(firebaseApp);
+export const auth_s = getAuth(firebaseApp);
+
+export const auth_supervisor = getAuth(firebaseApp);
+export const auth_staff = getAuth(firebaseApp);
+
 export const functions = getFunctions(firebaseApp);
 connectAuthEmulator(auth, 'http://127.0.0.1:9099');
 connectFirestoreEmulator(db, '127.0.0.1', 8080);
@@ -31,9 +36,13 @@ connectFunctionsEmulator(functions, "127.0.0.1", 5001);
 export function isLoggedIn() {
     return auth.currentUser != null && !auth.currentUser.isAnonymous
   }
+
+export function isSupervisorLoggedIn() {
+return auth_supervisor.currentUser != null && !auth_supervisor.currentUser.isAnonymous
+}
   
 
-export default function About(){
+export default function app(){
     const router = useRouter()
 
     return (

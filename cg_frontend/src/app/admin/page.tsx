@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 export default function Admin(){
+    useEffect(() => {}, []);
     const [signUpEmail, setSignUpEmail] = useState<string | undefined>(undefined);
     const [signUpPassword, setSignUpPassword] = useState<string | undefined>(undefined);
 
@@ -25,6 +26,7 @@ export default function Admin(){
         createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword).then((userCred) => {
             console.log('created user')
             console.log(isLoggedIn())
+            router.push('/admin/addUsers')
         }).catch((error) => {
             console.log("Error signin in: ", error.code, error.message);
         });

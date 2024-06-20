@@ -1,13 +1,23 @@
-# Welcome to Cloud Functions for Firebase for Python!
-# To get started, simply uncomment the below code or create your own.
-# Deploy with `firebase deploy`
+from firebase_functions import firestore_fn, https_fn
 
-from firebase_functions import https_fn
-from firebase_admin import initialize_app
+# The Firebase Admin SDK to access Cloud Firestore.
+from firebase_admin import initialize_app, firestore
+import google.cloud.firestore
+from firebase_functions import options
+app = initialize_app()
 
-# initialize_app()
-#
-#
-# @https_fn.on_request()
-# def on_request_example(req: https_fn.Request) -> https_fn.Response:
-#     return https_fn.Response("Hello world!")
+
+@https_fn.on_call()
+def addUser(req: https_fn.CallableRequest):
+
+    firestore_client: google.cloud.firestore.Client = firestore.client()
+
+    # Push the new message into Cloud Firestore using the Firebase Admin SDK.
+    _, doc_ref = firestore_client.collection("users").add({"uid": req.data['uid'], "role": req.data['role']})
+    print('ye bhi hua')
+
+    # Send back a message that we've successfully written the message
+    return {
+    'data': { 'success': 'true' }
+}
+    # return https_fn.Response({ 'data': { 'success': 'true' } })

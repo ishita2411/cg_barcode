@@ -1,4 +1,4 @@
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
+// import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 
 export const metadata = {
   title: 'Next.js',
@@ -13,9 +13,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-      <AppRouterCacheProvider>
+      {/* <AppRouterCacheProvider> */}
         {children}
-        </AppRouterCacheProvider>
+      {/* </AppRouterCacheProvider> */}
         </body>
     </html>
   )
