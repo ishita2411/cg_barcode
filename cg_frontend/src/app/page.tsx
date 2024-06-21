@@ -8,6 +8,8 @@ import { getAuth, setPersistence, browserLocalPersistence, connectAuthEmulator }
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
+import { useEffect, useState } from "react";
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -44,6 +46,16 @@ return auth_supervisor.currentUser != null && !auth_supervisor.currentUser.isAno
 
 export default function app(){
     const router = useRouter()
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        setPersistence(auth, browserLocalPersistence).then(() => {
+        setIsLoading(false);
+        }).catch((error) => {
+        console.log('error occurred...', error);
+        });
+
+    });
 
     return (
         <div>

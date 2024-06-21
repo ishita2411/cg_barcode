@@ -18,7 +18,7 @@ export default function addUsers(){
         if (!isLoggedIn()){
             router.push('/error')
         }
-    });
+    }, []);
 
     const [email, setEmail] = useState<string | undefined>(undefined);
     const [password, setPassword] = useState<string | undefined>(undefined);
@@ -46,12 +46,12 @@ export default function addUsers(){
 
         createUserWithEmailAndPassword(auth_s, email, password).then((userCred) => {
             console.log(userCred.user.uid)
-            const addExpenseFunction = httpsCallable(functions, "addUser");
-                    addExpenseFunction({
+            const addUserFunction = httpsCallable(functions, "addUser");
+                    addUserFunction({
                         'uid':userCred.user.uid,
                         'role' : value
                     }).then((data) => {
-                        console.log("Successfully added user.");
+                        console.log("Successfully added expense.");
                     }).catch((error) => {
                         console.log('oops')
                         console.log("Error adding user ", error.code, error.message);

@@ -1,28 +1,50 @@
 'use client'
+
+
 import { useEffect, useState } from "react";
-import { auth_supervisor, isSupervisorLoggedIn, db, functions, isLoggedIn,  auth_s } from "../page";
+import { auth, isSupervisorLoggedIn, db, functions, isLoggedIn,  auth_s } from "../page";
 import { useRouter } from 'next/navigation'
 import { httpsCallable } from "firebase/functions";
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
+
+
 export default function supervisor(){
+
 
     const [email, setEmail] = useState<string | undefined>(undefined);
     const [password, setPassword] = useState<string | undefined>(undefined);
+    const router = useRouter()
+
 
     function signInSupervisor(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
-        console.log(isLoggedIn())
-        console.log(isSupervisorLoggedIn())
         if (email === undefined || password === undefined) {
             return;
         }
         // console.log(auth)
-        signInWithEmailAndPassword(auth_supervisor, email, password).then((userCred) => {
+        signInWithEmailAndPassword(auth, email, password).then((userCred) => {
             console.log('User Signed In')
             console.log(isLoggedIn())
             console.log(isSupervisorLoggedIn())
-            
+            const getRoleFunction = httpsCallable(functions, "getRole");
+                    getRoleFunction({
+                        'uid':userCred.user.uid
+                    }).then((data) => {
+                        const x = JSON.stringify(data)
+                        const d = JSON.parse(x)
+                        if (d.data.role === 'supervisor'){
+                            const role ='supervisor'
+                            router.push('/supervisor/addCompanyProduct')
+                        }
+                        else{
+                            router.push('/error')
+                        }
+                    }).catch((error) => {
+                        console.log('oops')
+                        console.log("Error adding user ", error.code, error.message);
+                        alert("Error adding user. Please try again.");
+                    })
             
             
         }).catch((error) => {
@@ -37,7 +59,6 @@ export default function supervisor(){
     
     return (
         <div>
-            Login
             <form onSubmit={signInSupervisor}>
                 <label>Email : </label>
                 <input type = 'text' onChange={(event) => setEmail(event.target.value)}></input>
