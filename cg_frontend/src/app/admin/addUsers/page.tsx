@@ -6,6 +6,8 @@ import { httpsCallable } from "firebase/functions";
 
 // Import the functions you need from the SDKs you need
 // import { useRouter } from 'next/navigation'
+import * as m from "@mui/material";
+
 
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
@@ -14,81 +16,94 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } f
 export default function addUsers(){
     const router = useRouter()
 
-    useEffect(() => {
-        if (!isLoggedIn()){
-            router.push('/error')
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (!isLoggedIn()){
+    //         router.push('/error')
+    //     }
+    // }, []);
 
     const [email, setEmail] = useState<string | undefined>(undefined);
     const [password, setPassword] = useState<string | undefined>(undefined);
     const [value,setValue]=useState('');
+    const [errorMsg, setErrorMsg] = useState('')
+    const [successMsg, setsuccessMsg] = useState('')
 
     function addUserOnClick(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
-        console.log(email, password, value)
+        // console.log(email, password, value)
         
         if (email === undefined || password === undefined) {
             return;
         }
 
-        // const addExpenseFunction = httpsCallable(functions, "addUser");
-        // addExpenseFunction({
-        //     // 'uid':userCred.user.uid,
-        //     'role' : value
-        // }).then((data) => {
-        //     console.log("Successfully added expense.");
-        // }).catch((error) => {
-        //     console.log('oops')
-        //     console.log("Error adding user ", error.code, error.message);
-        //     alert("Error adding user. Please try again.");
-        // })
+
+
 
         createUserWithEmailAndPassword(auth_s, email, password).then((userCred) => {
-            console.log(userCred.user.uid)
+            // console.log(userCred.user.uid)
             const addUserFunction = httpsCallable(functions, "addUser");
                     addUserFunction({
                         'uid':userCred.user.uid,
                         'role' : value
                     }).then((data) => {
-                        console.log("Successfully added expense.");
+                        setsuccessMsg("Successfully added User");
+                        setErrorMsg('')
                     }).catch((error) => {
-                        console.log('oops')
-                        console.log("Error adding user ", error.code, error.message);
                         alert("Error adding user. Please try again.");
                     })
             signOut(auth_s).then(() => {
-                console.log('this is necesssary')
+                // console.log('this is necesssary')
             }).catch((error) => {
-                console.log('error in logging out')
+                // alert("error in logging out");
+
             })
         }).catch((error) => {
-            console.log("Error signin in: ", error.code, error.message);
+            setErrorMsg("User already exists. Please try again.");
+            setsuccessMsg('')
         });
         
         
-        // const balancesFunction = httpsCallable(functions, "addUser");
     }
 
 
   
     return (
-        
-        <div>
+        <m.Stack alignItems="center" spacing={2} >
+            <m.Typography variant="h4" >
             Add Users
+          <m.Divider orientation="horizontal" variant="fullWidth"/> 
+          </m.Typography> 
+
+
             <form onSubmit={addUserOnClick}>
-                <label>Email : </label>
-                <input type = 'text' onChange={(event) => setEmail(event.target.value)}></input>
-                <label>Password: </label>
-                <input type = 'password' onChange={(event) => setPassword(event.target.value)}></input>
-                <label >Choose User Role:</label>
-                <select name="cars" id="cars" onChange={(event) => setValue(event.target.value)}>
-                    <option value="supervisor">supervisor</option>
-                    <option value="staff">staff</option>
-                </select>
-                <button type='submit'>Add User</button>
+            <m.Stack spacing={2} >
+            <m.TextField type="text" label="Email" required onChange={(event) => setEmail(event.target.value)} />
+            <m.TextField type="password" label="Password" required onChange={(event) => setPassword(event.target.value)} />
+      <m.FormControl fullWidth >
+        <m.InputLabel id="role">role</m.InputLabel>
+        <m.Select
+          labelId="role"
+          value={value}
+          label="role"
+        onChange={(event) => setValue(event.target.value)} required
+
+        >
+          <m.MenuItem value="supervisor">supervisor</m.MenuItem>
+          <m.MenuItem value="staff">staff</m.MenuItem>
+        </m.Select>
+      </m.FormControl>
+
+                <m.Button type="submit">Add User</m.Button>
+                </m.Stack>
             </form>
-        </div>
+            <m.Typography variant="h5" color="green" >
+            {successMsg}
+            </m.Typography>
+
+            <m.Typography variant="h5" color="error" >
+            {errorMsg}
+          </m.Typography>
+        </m.Stack>
     )
     
     

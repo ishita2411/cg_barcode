@@ -1,4 +1,8 @@
-// import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
+
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
+// import Typography from '@mui/material/Typography';
+import * as m from "@mui/material";
+
 
 export const metadata = {
   title: 'Next.js',
@@ -13,9 +17,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-      {/* <AppRouterCacheProvider> */}
+      <AppRouterCacheProvider>
+        <header>
+          <m.Stack >
+          <m.Typography variant="h2" >
+            <m.Stack alignItems={"center"}>
+            Car Galaxy Inventory
+
+            </m.Stack>
+          <m.Divider orientation="horizontal" /> 
+
+          </m.Typography>
+
+          </m.Stack>
+          
+        
+          
+        </header>
         {children}
-      {/* </AppRouterCacheProvider> */}
+      </AppRouterCacheProvider>
         </body>
     </html>
   )

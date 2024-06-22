@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 
 
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import * as m from "@mui/material";
 
 export default function Admin(){
     useEffect(() => {}, []);
@@ -14,6 +15,8 @@ export default function Admin(){
 
     const [loginEmail, setLoginEmail] = useState<string | undefined>(undefined);
     const [loginPassword, setLoginPassword] = useState<string | undefined>(undefined);
+    const [errorMsg, setErrorMsg] = useState('')
+
     const router = useRouter()
 
     function signup(e: React.FormEvent<HTMLFormElement>){
@@ -42,11 +45,12 @@ export default function Admin(){
         }
         console.log(auth)
         signInWithEmailAndPassword(auth, loginEmail, loginPassword).then((userCred) => {
-            console.log('User Signed In')
-            console.log(isLoggedIn())
+            // console.log('User Signed In')
+            // console.log(isLoggedIn())
             router.push('/admin/addUsers')
             
         }).catch((error) => {
+
             console.log("Error signin in: ", error.code, error.message);
         });
         
@@ -65,26 +69,37 @@ export default function Admin(){
     }
 
     return (
-        <div>
-            admin  <br></br>
-            <form onSubmit={signup}>
+        
+       <m.Stack alignItems="center" spacing={2} >
+        
+        <m.Typography variant="h4" >
+              Admin
+          <m.Divider orientation="horizontal" variant="fullWidth"/> 
+
+          </m.Typography>
+
+            {/* <form onSubmit={signup}>
+                <m.TextField type="text" label="Email" required onChange={(event) => setSignUpEmail(event.target.value)} />
                 <label>Email : </label>
                 <input type = 'text' onChange={(event) => setSignUpEmail(event.target.value)}></input>
+                <m.TextField type="text" label="Email" required onChange={(event) => setSignUpEmail(event.target.value)} />
                 <label>Password: </label>
                 <input type = 'password' onChange={(event) => setSignUpPassword(event.target.value)}></input>
                 <button type='submit'>Sign Up</button>
-            </form><br></br><br></br>
+            </form><br></br><br></br> */}
+            
 
             <form onSubmit={login}>
-                <label>Email : </label>
-                <input type = 'text' onChange={(event) => setLoginEmail(event.target.value)}></input>
-                <label>Password: </label>
-                <input type = 'password' onChange={(event) => setLoginPassword(event.target.value)}></input>
-                <button type='submit'>Login</button>
-            </form> <br></br><br></br>
-            <button onClick={logout}>Logout</button>
-            
-        </div>
+                <m.Stack spacing={2} >
+                    <m.TextField type="text" label="Email" required onChange={(event) => setLoginEmail(event.target.value)} />
+                    <m.TextField type="password" label="Password" required onChange={(event) => setLoginPassword(event.target.value)} />
+                    <m.Button type='submit'>Login</m.Button>
+                </m.Stack >
+            </form> 
+            <m.Typography variant="h5" color="error" >
+            {errorMsg}
+          </m.Typography>
+            </m.Stack>
     )
     
     

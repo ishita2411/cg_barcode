@@ -11,6 +11,8 @@ import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 import { useEffect, useState } from "react";
 
 
+import * as m from "@mui/material";
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBhWiEV55ZGoLuhNptA5ukVtcD_SvYvIN0",
@@ -48,22 +50,36 @@ export default function app(){
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        setPersistence(auth, browserLocalPersistence).then(() => {
-        setIsLoading(false);
-        }).catch((error) => {
-        console.log('error occurred...', error);
-        });
+    // useEffect(() => {
+    //     setPersistence(auth, browserLocalPersistence).then(() => {
+    //     setIsLoading(false);
+    //     }).catch((error) => {
+    //     console.log('error occurred...', error);
+    //     });
 
-    });
+    // });
+
 
     return (
-        <div>
-            Select your role:
-            <button onClick={() => router.push('/admin')}>Admin</button>
-            <button onClick={() => router.push('/supervisor')}>Supervisor</button>
-            <button onClick={() => router.push('/staff')}>Staff</button>
-        </div>
+        <m.Stack spacing={2} alignItems="center">
+            <m.Box
+      height={100}
+      width={200}
+      my={4}
+      display="flex"
+      alignItems="center"
+      gap={4}
+      p={2}>
+
+    </m.Box>
+            <m.Button variant="contained" onClick={() => router.push('/admin')}>Admin</m.Button>
+                <m.Button variant="contained" onClick={() => router.push('/supervisor')}>Supervisor</m.Button>
+                <m.Button variant="contained" onClick={() => router.push('/staff')}>Staff</m.Button> 
+        
+                
+
+        </m.Stack>
+            
     )
     
     

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { httpsCallable } from "firebase/functions";
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
+import * as m from "@mui/material";
 
 
 export default function supervisor(){
@@ -15,6 +16,8 @@ export default function supervisor(){
     const [email, setEmail] = useState<string | undefined>(undefined);
     const [password, setPassword] = useState<string | undefined>(undefined);
     const router = useRouter()
+    const [errorMsg, setErrorMsg] = useState('')
+
 
 
     function signInSupervisor(e: React.FormEvent<HTMLFormElement>){
@@ -22,7 +25,7 @@ export default function supervisor(){
         if (email === undefined || password === undefined) {
             return;
         }
-        // console.log(auth)
+
         signInWithEmailAndPassword(auth, email, password).then((userCred) => {
             console.log('User Signed In')
             console.log(isLoggedIn())
@@ -34,21 +37,20 @@ export default function supervisor(){
                         const x = JSON.stringify(data)
                         const d = JSON.parse(x)
                         if (d.data.role === 'supervisor'){
-                            const role ='supervisor'
                             router.push('/supervisor/addCompanyProduct')
                         }
                         else{
-                            router.push('/error')
+                            setErrorMsg('This user does not have access to the Supervisor page')
                         }
                     }).catch((error) => {
                         console.log('oops')
                         console.log("Error adding user ", error.code, error.message);
-                        alert("Error adding user. Please try again.");
+                        setErrorMsg("Cannot access role of this user");
                     })
             
             
         }).catch((error) => {
-            console.log("Error signin in: ", error.code, error.message);
+            setErrorMsg("Error signin in: "+ error.code + ' ' + error.message);
         });
         
 
@@ -58,7 +60,26 @@ export default function supervisor(){
 
     
     return (
-        <div>
+        <m.Stack alignItems="center" spacing={2} >
+        
+        <m.Typography variant="h4" >
+              Supervisor
+          <m.Divider orientation="horizontal" variant="fullWidth"/> 
+
+          </m.Typography>            
+
+            <form onSubmit={signInSupervisor}>
+                <m.Stack spacing={2} >
+                    <m.TextField type="text" label="Email" required onChange={(event) => setEmail(event.target.value)} />
+                    <m.TextField type="password" label="Password" required onChange={(event) => setPassword(event.target.value)} />
+                    <m.Button type='submit'>Sign In</m.Button>
+                </m.Stack >
+            </form> 
+            <m.Typography variant="h5" color="error" >
+            {errorMsg}
+          </m.Typography>
+
+            {/* <div>
             <form onSubmit={signInSupervisor}>
                 <label>Email : </label>
                 <input type = 'text' onChange={(event) => setEmail(event.target.value)}></input>
@@ -66,7 +87,11 @@ export default function supervisor(){
                 <input type = 'password' onChange={(event) => setPassword(event.target.value)}></input>
                 <button type='submit'>Sign in</button>
             </form>
-        </div>
+        </div> */}
+            
+            </m.Stack>
+
+        
     )
     
     

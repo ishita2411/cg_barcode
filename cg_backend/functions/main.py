@@ -44,3 +44,45 @@ def addCompProd(req: https_fn.CallableRequest):
     return {'success':True}
 
 
+@https_fn.on_call()
+def getCompanies(req: https_fn.CallableRequest):
+    companies = db.collection("company").stream()
+    all_companies = []
+    for doc in companies:
+        # all_companies.append(doc.to_dict()['newcompany'])
+        all_companies.append(doc.to_dict())
+
+    # print(all_companies)
+    return {'data':all_companies}
+
+@https_fn.on_call()
+def getProducts(req: https_fn.CallableRequest):
+    products = db.collection("product").stream()
+    all_products = []
+    for doc in products:
+        # all_products.append(doc.to_dict()['newproduct'])
+        all_products.append(doc.to_dict())
+
+    # print(all_companies)
+    return {'data':all_products}
+
+
+@https_fn.on_call()
+def addItemDetails(req: https_fn.CallableRequest):
+    doc_ref = db.collection("users").document("JfV07BA2UxsIiSTPzximbhb94JPY").get()
+    print('yaa hoo')
+    print(doc_ref.to_dict())
+    # for doc in doc_ref:
+    #     # all_products.append(doc.to_dict()['newproduct'])
+    #     print('hell')
+    #     print(doc)
+
+    return {
+    'data': { 'success': 'true' }
+}
+
+
+
+    
+
+
