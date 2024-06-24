@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { auth, isSupervisorLoggedIn, db, functions, isLoggedIn} from "../../page";
 import { useRouter } from 'next/navigation'
 import { httpsCallable } from "firebase/functions";
-// import { signInWithEmailAndPassword } from 'firebase/auth';
+
+import * as m from "@mui/material";
+
 
 
 
@@ -14,15 +16,15 @@ export default function supervisor(){
     const router = useRouter()
 
     const [newVal, setNewVal] = useState<string | undefined>(undefined);
-    const [option, setOption] = useState<string | undefined>(undefined);
+    const [option, setOption] = useState('company');
     // const [hideAddDetails, setHideAddDetails] = useState(false);
     // const [hideAddCompProd, setHideAddCompProd] = useState(false);
 
-    const [action, setAction] = useState('newProdComp')
+    // const [action, setAction] = useState('newProdComp')
 
     const [itemName, setItemName] = useState<string | undefined>(undefined);
-    const [productGrp, setProductGrp] = useState<string | undefined>(undefined);
-    const [company, setCompany] = useState<string | undefined>(undefined);
+    const [productGrp, setProductGrp] = useState('');
+    const [company, setCompany] = useState('');
     const [supplier, setSupplier] = useState<string | undefined>(undefined);
     const [price, setPrice] = useState<string | undefined>(undefined);
 
@@ -30,6 +32,19 @@ export default function supervisor(){
     const [companies, setCompanies] = useState([]);
     const [products, setProducts] = useState([]);
 
+    const [alignment, setAlignment] = useState('web');
+    const [action, setAction] = useState('newProdComp')
+
+
+    const handleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string,
+    ) => {
+        console.log(newAlignment)
+        setAction(newAlignment);
+        console.log(newAlignment)
+
+    };
 
     useEffect(() => {
         // if (!isLoggedIn()){
@@ -76,14 +91,13 @@ export default function supervisor(){
 
     function addCompanyOrProduct(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
+        console.log(option)
         const addCompProdFunction = httpsCallable(functions, "addCompProd");
                     addCompProdFunction({
                         'option' : option,
                         'value' : newVal
                     }).then((data) => {
-                        console.log('added')
-                        if (option === "company"){
-                            
+                        if (option === "company"){                            
                             let new_data = {'newcompany' : newVal}
                             console.log(new_data)
                             const comp = companies
@@ -124,64 +138,125 @@ export default function supervisor(){
                         })
     }
 
-
+    const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setOption((event.target as HTMLInputElement).value);
+      };
 
     
     return (
-        <div>
+        <m.Stack>
+                <m.ToggleButtonGroup
+                    color="primary"
+                    value={action}
+                    exclusive
+                    fullWidth
+                    aria-label="Platform">
+                    <m.ToggleButton onClick={selectAddCompanyOrProduct}  value="newProdComp">Add new Product Group or Company</m.ToggleButton>
+                    <m.ToggleButton onClick={selectAddDetails} value="newItem">Add New Item</m.ToggleButton>
+                </m.ToggleButtonGroup>
 
-            <button  onClick={selectAddDetails}>Add Product details</button>
-            <button onClick={selectAddCompanyOrProduct}>Add New Company or Group of Product</button>
-           {action === 'newItem'?<div></div>:<div>
-            <h2> New Company or Product</h2>
+           {action === 'newItem'?<m.Stack></m.Stack>:<m.Stack alignItems="center" spacing={2}>
+           <m.Typography variant="h4" >
+                    New Company or Product
+            <m.Divider orientation="horizontal" variant="fullWidth"/> 
+            </m.Typography>
+            
                 <form onSubmit={addCompanyOrProduct}>
-                    
+                    <m.Stack spacing={2}>
+                    <m.FormControl>
+                        <m.RadioGroup
+                            row
+                            defaultValue="company"
+                            value={option}
+                            onChange={handleOptionChange}
+                        >
+                            <m.FormControlLabel value="company" control={<m.Radio />} label="Company" />
+                            <m.FormControlLabel value="product" control={<m.Radio />} label="Product" />
+                        </m.RadioGroup>
+                    </m.FormControl>
 
-                    <input type="radio" id="company" name="addNew" value="company" onChange={(event) => setOption(event.target.value)}></input>
-                    <label>Company</label><br></br>
-                    <input type="radio" id="product" name="addNew" value="product" onChange={(event) => setOption(event.target.value)}></input>
-                    <label>Product</label><br></br>
-                    <label>Enter Value</label>
-                    <input type="text" onChange={(event) => setNewVal(event.target.value)}></input>
-                    <button type='submit'>Add New Value</button>
+                    <m.TextField type="text" label="Enter Value" required onChange={(event) => setNewVal(event.target.value)} />
+                    <m.Button type="submit">Add New Value</m.Button>
+                    </m.Stack>
                 </form>
-            </div>}
+                </m.Stack>}
 
 
 
 
 
-            {action ==="newProdComp"?<div></div>:<div>
-                <h2>Add Product Details</h2>
+            {action ==="newProdComp"?<m.Stack></m.Stack>:<m.Stack spacing={2} alignItems={"center"}>
+            <m.Typography variant="h4" >
+                    Add Product Details
+            <m.Divider orientation="horizontal" variant="fullWidth"/> 
+            </m.Typography>
+            <m.Box
+      width={600}
+      my={4}
+      alignItems="center"
+      gap={4}
+      p={2}
+    >
+    
+
                 <form onSubmit={additemDetails}>
-                    <label>Item Name:</label>
-                    <input type="text" onChange={(event) => setItemName(event.target.value)}></input><br></br>
+                    <m.Stack spacing={2}>
+                    <m.TextField type="text" label="Item Name" required onChange={(event) => setItemName(event.target.value)} />
+                    
+                    <m.Stack direction={"row"} spacing={2}>
 
-                    <label>Product Group</label>
-                    <select onChange={(event) => setProductGrp(event.target.value)}> 
-                        <option value="select product">select product </option>
-                        {products.map((product) => <option value={product['newproduct']} key={product['newproduct']}>{product['newproduct']}</option>)}
-                    </select>
+                    <m.FormControl fullWidth  >
+                            <m.InputLabel id="productGrp">Product Group</m.InputLabel>
+                            <m.Select
+                            labelId="productGrp"
+                            value={productGrp}
+                            label="role"
+                            onChange={(event) => setProductGrp(event.target.value)} required
+                            >
 
-                    <label>Company</label>
-                    <select onChange={(event) => setCompany(event.target.value)}> 
-                        <option value="select company"> select company</option>
-                        {companies.map((company) => <option value={company['newcompany']} key={company['newcompany']}>{company['newcompany']}</option>)}
-                    </select>
+                                {
+                                    products.map((product) => <m.MenuItem value={product['newproduct']} key={product['newproduct']}>{product['newproduct']}</m.MenuItem>)
+                                }
+                            
+                            <m.MenuItem value="supervisor">supervisor</m.MenuItem>
+                            <m.MenuItem value="staff">staff</m.MenuItem>
+                            </m.Select>
+                    </m.FormControl>
 
-                    <label>Supplier</label>
-                    <input type="text" onChange={(event) => setSupplier(event.target.value)}></input><br></br>
+                    <m.FormControl fullWidth >
+                            <m.InputLabel id="company">Company</m.InputLabel>
+                            <m.Select
+                            labelId="company"
+                            value={company}
+                            label="role"
+                            onChange={(event) => setCompany(event.target.value)} required
+                            >
 
-                    <label>Price</label>
-                    <input type="text" onChange={(event) => setPrice(event.target.value)}></input><br></br>
+                                {
+                                    companies.map((company) => <m.MenuItem value={company['newcompany']} key={company['newcompany']}>{company['newcompany']}</m.MenuItem>)
+                                }
+                            
+                            <m.MenuItem value="supervisor">supervisor</m.MenuItem>
+                            <m.MenuItem value="staff">staff</m.MenuItem>
+                            </m.Select>
+                    </m.FormControl>
+                    </m.Stack>
 
-                    <button type="submit">Submit details</button>
+                    <m.TextField type="text" label="Supplier" required onChange={(event) => setSupplier(event.target.value)} />
+                    <m.TextField type="text" label="Price" required onChange={(event) => setPrice(event.target.value)} />
+
+                    <m.Button type="submit">Submit details</m.Button>
+
+
+                    </m.Stack>
 
 
                     
                 </form>
-            </div>}
-        </div>
+                </m.Box>
+                </m.Stack>}
+        
+        </m.Stack>
     )
     
     

@@ -1,3 +1,7 @@
+
+
+// Import the functions you need from the SDKs you need
+// import { useRouter } from 'next/navigation'
 'use client'
 
 
@@ -5,13 +9,15 @@ import { useEffect, useState } from "react";
 import { auth, isSupervisorLoggedIn, db, functions, isLoggedIn,  auth_s } from "../page";
 import { useRouter } from 'next/navigation'
 import { httpsCallable } from "firebase/functions";
-import { signInWithEmailAndPassword } from 'firebase/auth';
+// import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import * as m from "@mui/material";
 
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
-export default function supervisor(){
 
+
+export default function addUsers(){
 
     const [email, setEmail] = useState<string | undefined>(undefined);
     const [password, setPassword] = useState<string | undefined>(undefined);
@@ -20,7 +26,7 @@ export default function supervisor(){
 
 
 
-    function signInSupervisor(e: React.FormEvent<HTMLFormElement>){
+    function signInStaff(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
         if (email === undefined || password === undefined) {
             return;
@@ -29,15 +35,15 @@ export default function supervisor(){
         signInWithEmailAndPassword(auth, email, password).then((userCred) => {
             console.log('User Signed In')
             console.log(isLoggedIn())
-            console.log(isSupervisorLoggedIn())
+            // console.log(isSupervisorLoggedIn())
             const getRoleFunction = httpsCallable(functions, "getRole");
                     getRoleFunction({
                         'uid':userCred.user.uid
                     }).then((data) => {
                         const x = JSON.stringify(data)
                         const d = JSON.parse(x)
-                        if (d.data.role === 'supervisor'){
-                            router.push('/supervisor/addCompanyProduct')
+                        if (d.data.role === 'staff'){
+                            router.push('/staff/generateQr')
                         }
                         else{
                             setErrorMsg('This user does not have access to the Supervisor page')
@@ -56,19 +62,18 @@ export default function supervisor(){
 
 
     }
-
-
     
+        
+
+
+  
     return (
         <m.Stack alignItems="center" spacing={2} >
-        
-        <m.Typography variant="h4" >
-              Supervisor
-          <m.Divider orientation="horizontal" variant="fullWidth"/> 
+            <m.Typography variant="h4" >
+              Staff
+          <m.Divider orientation="horizontal" variant="fullWidth"/>          
 
-          </m.Typography>            
-
-            <form onSubmit={signInSupervisor}>
+            <form onSubmit={signInStaff}>
                 <m.Stack spacing={2} >
                     <m.TextField type="text" label="Email" required onChange={(event) => setEmail(event.target.value)} />
                     <m.TextField type="password" label="Password" required onChange={(event) => setPassword(event.target.value)} />
@@ -79,11 +84,8 @@ export default function supervisor(){
             {errorMsg}
           </m.Typography>
 
-            
-            
-            </m.Stack>
-
-        
+          </m.Typography>  
+        </m.Stack>
     )
     
     
